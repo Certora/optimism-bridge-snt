@@ -9,3 +9,9 @@ typechain-types
 cache
 artifacts
 
+# Certora
+.certora*
+resource_errors.json
+last_conf*
+certora*.txt
+.zip-output-url.txt
