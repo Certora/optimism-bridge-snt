@@ -1,0 +1,12 @@
+{
+    "filename" : "contracts/token/MiniMeToken.sol",
+    "contract" : "MiniMeToken",
+    "solc": "solc8.18",
+    "num_mutants": 20,
+    "mutations": [
+          "require-mutation",
+          "binary-op-mutation",
+          "swap-arguments-operator-mutation",
+          "delete-expression-mutation"
+    ]
+}

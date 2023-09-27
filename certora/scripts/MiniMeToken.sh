@@ -4,5 +4,6 @@ certoraRun certora/harness/MiniMeTokenHarness.sol \
 --loop_iter 3 \
 --optimistic_loop \
 --server staging \
---rule_sanity
+--send_only \
+--rule_sanity \
 --msg "MiniMeToken invariants - noFeeOnTransferFrom"
