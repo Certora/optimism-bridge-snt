@@ -486,8 +486,7 @@ contract MiniMeToken is Controlled {
         {
         uint snapshotBlock = _snapshotBlock;
         if (snapshotBlock == 0) {
-            /// AssignmentMutation(`block.number` |==> `0`) of: `snapshotBlock = block.number;`
-            snapshotBlock = 0;
+            snapshotBlock = block.number;
         }
         MiniMeToken cloneToken = tokenFactory.createCloneToken(
             payable(this),
@@ -498,7 +497,8 @@ contract MiniMeToken is Controlled {
             _transfersEnabled
             );
 
-        cloneToken.changeController(msg.sender);
+        /// DeleteExpressionMutation(`cloneToken.changeController(msg.sender)` |==> `assert(true)`) of: `cloneToken.changeController(msg.sender);`
+        assert(true);
 
         // An event to make the token easy to find on the blockchain
         emit NewCloneToken(address(cloneToken), snapshotBlock);

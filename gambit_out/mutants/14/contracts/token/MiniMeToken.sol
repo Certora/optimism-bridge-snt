@@ -312,8 +312,7 @@ contract MiniMeToken is Controlled {
         internal
     {
         uint curTotalSupply = totalSupplyAt(block.number);
-        /// RequireMutation(`curTotalSupply >= _amount` |==> `false`) of: `require(curTotalSupply >= _amount, "No enough supply");`
-        require(false, "No enough supply");
+        require(curTotalSupply >= _amount, "No enough supply");
         uint previousBalanceFrom = balanceOfAt(_owner, block.number);
         require(previousBalanceFrom >= _amount, "No enough balance");
         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);
@@ -608,7 +607,8 @@ contract MiniMeToken is Controlled {
      * @param _value The new number of tokens
      */
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {
-        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
+        /// IfStatementMutation(`(checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)` |==> `true`) of: `if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {`
+        if (true) {
             Checkpoint storage newCheckPoint = checkpoints.push();
             newCheckPoint.fromBlock = uint128(block.number);
             newCheckPoint.value = uint128(_value);

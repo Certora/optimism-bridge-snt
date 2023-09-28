@@ -301,8 +301,7 @@ contract MiniMeToken is Controlled {
         uint previousBalanceTo = balanceOfAt(_owner, block.number);
         require(previousBalanceTo + _amount >= previousBalanceTo, "Balance overflow"); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
-        /// BinaryOpMutation(`+` |==> `*`) of: `updateValueAtNow(balances[_owner], previousBalanceTo + _amount);`
-        updateValueAtNow(balances[_owner], previousBalanceTo*_amount);
+        updateValueAtNow(balances[_owner], previousBalanceTo + _amount);
         emit Transfer(address(0), _owner, _amount);
     }
 
@@ -610,7 +609,8 @@ contract MiniMeToken is Controlled {
     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {
         if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {
             Checkpoint storage newCheckPoint = checkpoints.push();
-            newCheckPoint.fromBlock = uint128(block.number);
+            /// DeleteExpressionMutation(`newCheckPoint.fromBlock = uint128(block.number)` |==> `assert(true)`) of: `newCheckPoint.fromBlock = uint128(block.number);`
+            assert(true);
             newCheckPoint.value = uint128(_value);
         } else {
             Checkpoint storage oldCheckPoint = checkpoints[checkpoints.length-1];

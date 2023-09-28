@@ -256,8 +256,7 @@ contract MiniMeToken is Controlled {
         //  receiving the tokens
         uint256 previousBalanceTo = balanceOfAt(_to, block.number);
         require(previousBalanceTo + _amount >= previousBalanceTo, "Balance overflow"); // Check for overflow
-        /// BinaryOpMutation(`+` |==> `/`) of: `updateValueAtNow(balances[_to], previousBalanceTo + _amount);`
-        updateValueAtNow(balances[_to], previousBalanceTo/_amount);
+        updateValueAtNow(balances[_to], previousBalanceTo + _amount);
 
         // An event to make the transfer easy to find on the blockchain
         emit Transfer(_from, _to, _amount);
@@ -648,7 +647,8 @@ contract MiniMeToken is Controlled {
      */
     receive() payable external {
         require(isContract(controller), "Deposit unallowed");
-        require(TokenController(controller).proxyPayment{value: msg.value}(msg.sender), "Deposit denied");
+        /// RequireMutation(`TokenController(controller).proxyPayment{value: msg.value}(msg.sender)` |==> `true`) of: `require(TokenController(controller).proxyPayment{value: msg.value}(msg.sender), "Deposit denied");`
+        require(true, "Deposit denied");
     }
 
 //////////

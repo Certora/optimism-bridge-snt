@@ -297,8 +297,7 @@ contract MiniMeToken is Controlled {
         internal
     {
         uint curTotalSupply = totalSupplyAt(block.number);
-        /// BinaryOpMutation(`+` |==> `%`) of: `require(curTotalSupply + _amount >= curTotalSupply, "Total overflow"); // Check for overflow`
-        require(curTotalSupply%_amount >= curTotalSupply, "Total overflow"); // Check for overflow
+        require(curTotalSupply + _amount >= curTotalSupply, "Total overflow"); // Check for overflow
         uint previousBalanceTo = balanceOfAt(_owner, block.number);
         require(previousBalanceTo + _amount >= previousBalanceTo, "Balance overflow"); // Check for overflow
         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);
@@ -638,7 +637,8 @@ contract MiniMeToken is Controlled {
      * @dev Helper function to return a min betwen the two uints
      */
     function min(uint a, uint b) internal pure returns (uint) {
-        return a < b ? a : b;
+        /// SwapArgumentsOperatorMutation(`a < b` |==> `b < a`) of: `return a < b ? a : b;`
+        return b < a ? a : b;
     }
 
     /**
