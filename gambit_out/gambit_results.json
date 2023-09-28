@@ -1,1 +1,242 @@
-[]
+[
+  {
+    "description": "AssignmentMutation",
+    "diff": "--- original\n+++ mutant\n@@ -156,7 +156,8 @@\n         decimals = _decimalUnits;                          // Set the decimals\n         symbol = _tokenSymbol;                             // Set the symbol\n         parentToken = MiniMeToken(_parentToken);\n-        parentSnapShotBlock = _parentSnapShotBlock;\n+        /// AssignmentMutation(`_parentSnapShotBlock` |==> `0`) of: `parentSnapShotBlock = _parentSnapShotBlock;`\n+        parentSnapShotBlock = 0;\n         transfersEnabled = _transfersEnabled;\n         creationBlock = block.number;\n     }\n",
+    "id": "1",
+    "name": "mutants/1/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "AssignmentMutation",
+    "diff": "--- original\n+++ mutant\n@@ -205,7 +205,8 @@\n             if (allowed[_from][msg.sender] < _amount) { \n                 return false;\n             }\n-            allowed[_from][msg.sender] -= _amount;\n+            /// AssignmentMutation(`_amount` |==> `0`) of: `allowed[_from][msg.sender] -= _amount;`\n+            allowed[_from][msg.sender] -= 0;\n         }\n         return doTransfer(_from, _to, _amount);\n     }\n",
+    "id": "2",
+    "name": "mutants/2/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "SwapArgumentsOperatorMutation",
+    "diff": "--- original\n+++ mutant\n@@ -231,7 +231,8 @@\n             return true;\n         }\n \n-        require(parentSnapShotBlock < block.number, \"Invalid block.number\");\n+        /// SwapArgumentsOperatorMutation(`parentSnapShotBlock < block.number` |==> `block.number < parentSnapShotBlock`) of: `require(parentSnapShotBlock < block.number, \"Invalid block.number\");`\n+        require(block.number < parentSnapShotBlock, \"Invalid block.number\");\n \n         // Do not allow transfer to 0x0 or the token contract itself\n         require((_to != address(0)) && (_to != address(this)), \"Invalid _to\");\n",
+    "id": "3",
+    "name": "mutants/3/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "SwapArgumentsOperatorMutation",
+    "diff": "--- original\n+++ mutant\n@@ -239,7 +239,8 @@\n         // If the amount being transfered is more than the balance of the\n         //  account the transfer returns false\n         uint256 previousBalanceFrom = balanceOfAt(_from, block.number);\n-        if (previousBalanceFrom < _amount) {\n+        /// SwapArgumentsOperatorMutation(`previousBalanceFrom < _amount` |==> `_amount < previousBalanceFrom`) of: `if (previousBalanceFrom < _amount) {`\n+        if (_amount < previousBalanceFrom) {\n             return false;\n         }\n \n",
+    "id": "4",
+    "name": "mutants/4/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -250,7 +250,8 @@\n \n         // First update the balance array with the new value for the address\n         //  sending the tokens\n-        updateValueAtNow(balances[_from], previousBalanceFrom - _amount);\n+        /// BinaryOpMutation(`-` |==> `*`) of: `updateValueAtNow(balances[_from], previousBalanceFrom - _amount);`\n+        updateValueAtNow(balances[_from], previousBalanceFrom*_amount);\n \n         // Then update the balance array with the new value for the address\n         //  receiving the tokens\n",
+    "id": "5",
+    "name": "mutants/5/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -256,7 +256,8 @@\n         //  receiving the tokens\n         uint256 previousBalanceTo = balanceOfAt(_to, block.number);\n         require(previousBalanceTo + _amount >= previousBalanceTo, \"Balance overflow\"); // Check for overflow\n-        updateValueAtNow(balances[_to], previousBalanceTo + _amount);\n+        /// BinaryOpMutation(`+` |==> `/`) of: `updateValueAtNow(balances[_to], previousBalanceTo + _amount);`\n+        updateValueAtNow(balances[_to], previousBalanceTo/_amount);\n \n         // An event to make the transfer easy to find on the blockchain\n         emit Transfer(_from, _to, _amount);\n",
+    "id": "6",
+    "name": "mutants/6/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "AssignmentMutation",
+    "diff": "--- original\n+++ mutant\n@@ -285,7 +285,8 @@\n             require(TokenController(controller).onApprove(_from, _spender, _amount), \"Unauthorized approve\");\n         }\n \n-        allowed[_from][_spender] = _amount;\n+        /// AssignmentMutation(`_amount` |==> `0`) of: `allowed[_from][_spender] = _amount;`\n+        allowed[_from][_spender] = 0;\n         emit Approval(_from, _spender, _amount);\n         return true;\n     }\n",
+    "id": "7",
+    "name": "mutants/7/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -297,7 +297,8 @@\n         internal\n     {\n         uint curTotalSupply = totalSupplyAt(block.number);\n-        require(curTotalSupply + _amount >= curTotalSupply, \"Total overflow\"); // Check for overflow\n+        /// BinaryOpMutation(`+` |==> `%`) of: `require(curTotalSupply + _amount >= curTotalSupply, \"Total overflow\"); // Check for overflow`\n+        require(curTotalSupply%_amount >= curTotalSupply, \"Total overflow\"); // Check for overflow\n         uint previousBalanceTo = balanceOfAt(_owner, block.number);\n         require(previousBalanceTo + _amount >= previousBalanceTo, \"Balance overflow\"); // Check for overflow\n         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);\n",
+    "id": "8",
+    "name": "mutants/8/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "RequireMutation",
+    "diff": "--- original\n+++ mutant\n@@ -299,7 +299,8 @@\n         uint curTotalSupply = totalSupplyAt(block.number);\n         require(curTotalSupply + _amount >= curTotalSupply, \"Total overflow\"); // Check for overflow\n         uint previousBalanceTo = balanceOfAt(_owner, block.number);\n-        require(previousBalanceTo + _amount >= previousBalanceTo, \"Balance overflow\"); // Check for overflow\n+        /// RequireMutation(`previousBalanceTo + _amount >= previousBalanceTo` |==> `false`) of: `require(previousBalanceTo + _amount >= previousBalanceTo, \"Balance overflow\"); // Check for overflow`\n+        require(false, \"Balance overflow\"); // Check for overflow\n         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);\n         updateValueAtNow(balances[_owner], previousBalanceTo + _amount);\n         emit Transfer(address(0), _owner, _amount);\n",
+    "id": "9",
+    "name": "mutants/9/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "DeleteExpressionMutation",
+    "diff": "--- original\n+++ mutant\n@@ -301,7 +301,8 @@\n         uint previousBalanceTo = balanceOfAt(_owner, block.number);\n         require(previousBalanceTo + _amount >= previousBalanceTo, \"Balance overflow\"); // Check for overflow\n         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);\n-        updateValueAtNow(balances[_owner], previousBalanceTo + _amount);\n+        /// DeleteExpressionMutation(`updateValueAtNow(balances[_owner], previousBalanceTo + _amount)` |==> `assert(true)`) of: `updateValueAtNow(balances[_owner], previousBalanceTo + _amount);`\n+        assert(true);\n         emit Transfer(address(0), _owner, _amount);\n     }\n \n",
+    "id": "10",
+    "name": "mutants/10/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -301,7 +301,8 @@\n         uint previousBalanceTo = balanceOfAt(_owner, block.number);\n         require(previousBalanceTo + _amount >= previousBalanceTo, \"Balance overflow\"); // Check for overflow\n         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);\n-        updateValueAtNow(balances[_owner], previousBalanceTo + _amount);\n+        /// BinaryOpMutation(`+` |==> `-`) of: `updateValueAtNow(balances[_owner], previousBalanceTo + _amount);`\n+        updateValueAtNow(balances[_owner], previousBalanceTo-_amount);\n         emit Transfer(address(0), _owner, _amount);\n     }\n \n",
+    "id": "11",
+    "name": "mutants/11/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -301,7 +301,8 @@\n         uint previousBalanceTo = balanceOfAt(_owner, block.number);\n         require(previousBalanceTo + _amount >= previousBalanceTo, \"Balance overflow\"); // Check for overflow\n         updateValueAtNow(totalSupplyHistory, curTotalSupply + _amount);\n-        updateValueAtNow(balances[_owner], previousBalanceTo + _amount);\n+        /// BinaryOpMutation(`+` |==> `*`) of: `updateValueAtNow(balances[_owner], previousBalanceTo + _amount);`\n+        updateValueAtNow(balances[_owner], previousBalanceTo*_amount);\n         emit Transfer(address(0), _owner, _amount);\n     }\n \n",
+    "id": "12",
+    "name": "mutants/12/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "RequireMutation",
+    "diff": "--- original\n+++ mutant\n@@ -312,7 +312,8 @@\n         internal\n     {\n         uint curTotalSupply = totalSupplyAt(block.number);\n-        require(curTotalSupply >= _amount, \"No enough supply\");\n+        /// RequireMutation(`curTotalSupply >= _amount` |==> `true`) of: `require(curTotalSupply >= _amount, \"No enough supply\");`\n+        require(true, \"No enough supply\");\n         uint previousBalanceFrom = balanceOfAt(_owner, block.number);\n         require(previousBalanceFrom >= _amount, \"No enough balance\");\n         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);\n",
+    "id": "13",
+    "name": "mutants/13/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "RequireMutation",
+    "diff": "--- original\n+++ mutant\n@@ -312,7 +312,8 @@\n         internal\n     {\n         uint curTotalSupply = totalSupplyAt(block.number);\n-        require(curTotalSupply >= _amount, \"No enough supply\");\n+        /// RequireMutation(`curTotalSupply >= _amount` |==> `false`) of: `require(curTotalSupply >= _amount, \"No enough supply\");`\n+        require(false, \"No enough supply\");\n         uint previousBalanceFrom = balanceOfAt(_owner, block.number);\n         require(previousBalanceFrom >= _amount, \"No enough balance\");\n         updateValueAtNow(totalSupplyHistory, curTotalSupply - _amount);\n",
+    "id": "14",
+    "name": "mutants/14/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "DeleteExpressionMutation",
+    "diff": "--- original\n+++ mutant\n@@ -374,7 +374,8 @@\n         public\n         returns (bool success)\n     {\n-        require(doApprove(msg.sender, _spender, _amount), \"Approve failed\");\n+        /// DeleteExpressionMutation(`require(doApprove(msg.sender, _spender, _amount), \"Approve failed\")` |==> `assert(true)`) of: `require(doApprove(msg.sender, _spender, _amount), \"Approve failed\");`\n+        assert(true);\n \n         ApproveAndCallFallBack(_spender).receiveApproval(\n             msg.sender,\n",
+    "id": "15",
+    "name": "mutants/15/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "IfStatementMutation",
+    "diff": "--- original\n+++ mutant\n@@ -420,7 +420,8 @@\n         //  genesis block for that token as this contains initial balance of\n         //  this token\n         if ((balances[_owner].length == 0) || (balances[_owner][0].fromBlock > _blockNumber)) {\n-            if (address(parentToken) != address(0)) {\n+            /// IfStatementMutation(`address(parentToken) != address(0)` |==> `true`) of: `if (address(parentToken) != address(0)) {`\n+            if (true) {\n                 return parentToken.balanceOfAt(_owner, min(_blockNumber, parentSnapShotBlock));\n             } else {\n                 // Has no parent\n",
+    "id": "16",
+    "name": "mutants/16/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "SwapArgumentsOperatorMutation",
+    "diff": "--- original\n+++ mutant\n@@ -445,7 +445,8 @@\n         //  requires that the `parentToken.totalSupplyAt` be queried at the\n         //  genesis block for this token as that contains totalSupply of this\n         //  token at this block number.\n-        if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {\n+        /// SwapArgumentsOperatorMutation(`totalSupplyHistory[0].fromBlock > _blockNumber` |==> `_blockNumber > totalSupplyHistory[0].fromBlock`) of: `if ((totalSupplyHistory.length == 0) || (totalSupplyHistory[0].fromBlock > _blockNumber)) {`\n+        if ((totalSupplyHistory.length == 0) || (_blockNumber > totalSupplyHistory[0].fromBlock)) {\n             if (address(parentToken) != address(0)) {\n                 return parentToken.totalSupplyAt(min(_blockNumber, parentSnapShotBlock));\n             } else {\n",
+    "id": "17",
+    "name": "mutants/17/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "AssignmentMutation",
+    "diff": "--- original\n+++ mutant\n@@ -486,7 +486,8 @@\n         {\n         uint snapshotBlock = _snapshotBlock;\n         if (snapshotBlock == 0) {\n-            snapshotBlock = block.number;\n+            /// AssignmentMutation(`block.number` |==> `0`) of: `snapshotBlock = block.number;`\n+            snapshotBlock = 0;\n         }\n         MiniMeToken cloneToken = tokenFactory.createCloneToken(\n             payable(this),\n",
+    "id": "18",
+    "name": "mutants/18/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "DeleteExpressionMutation",
+    "diff": "--- original\n+++ mutant\n@@ -497,7 +497,8 @@\n             _transfersEnabled\n             );\n \n-        cloneToken.changeController(msg.sender);\n+        /// DeleteExpressionMutation(`cloneToken.changeController(msg.sender)` |==> `assert(true)`) of: `cloneToken.changeController(msg.sender);`\n+        assert(true);\n \n         // An event to make the token easy to find on the blockchain\n         emit NewCloneToken(address(cloneToken), snapshotBlock);\n",
+    "id": "19",
+    "name": "mutants/19/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "IfStatementMutation",
+    "diff": "--- original\n+++ mutant\n@@ -579,7 +579,8 @@\n         }\n \n         // Shortcut for the actual value\n-        if (_block >= checkpoints[checkpoints.length-1].fromBlock) {\n+        /// IfStatementMutation(`_block >= checkpoints[checkpoints.length-1].fromBlock` |==> `false`) of: `if (_block >= checkpoints[checkpoints.length-1].fromBlock) {`\n+        if (false) {\n             return checkpoints[checkpoints.length-1].value;\n         }\n         if (_block < checkpoints[0].fromBlock) {\n",
+    "id": "20",
+    "name": "mutants/20/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -580,7 +580,8 @@\n \n         // Shortcut for the actual value\n         if (_block >= checkpoints[checkpoints.length-1].fromBlock) {\n-            return checkpoints[checkpoints.length-1].value;\n+            /// BinaryOpMutation(`-` |==> `%`) of: `return checkpoints[checkpoints.length-1].value;`\n+            return checkpoints[checkpoints.length%1].value;\n         }\n         if (_block < checkpoints[0].fromBlock) {\n             return 0;\n",
+    "id": "21",
+    "name": "mutants/21/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -590,7 +590,8 @@\n         uint _min = 0;\n         uint max = checkpoints.length-1;\n         while (max > _min) {\n-            uint mid = (max + _min + 1) / 2;\n+            /// BinaryOpMutation(`+` |==> `-`) of: `uint mid = (max + _min + 1) / 2;`\n+            uint mid = (max-_min + 1) / 2;\n             if (checkpoints[mid].fromBlock<=_block) {\n                 _min = mid;\n             } else {\n",
+    "id": "22",
+    "name": "mutants/22/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -590,7 +590,8 @@\n         uint _min = 0;\n         uint max = checkpoints.length-1;\n         while (max > _min) {\n-            uint mid = (max + _min + 1) / 2;\n+            /// BinaryOpMutation(`+` |==> `**`) of: `uint mid = (max + _min + 1) / 2;`\n+            uint mid = (max**_min + 1) / 2;\n             if (checkpoints[mid].fromBlock<=_block) {\n                 _min = mid;\n             } else {\n",
+    "id": "23",
+    "name": "mutants/23/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -594,7 +594,8 @@\n             if (checkpoints[mid].fromBlock<=_block) {\n                 _min = mid;\n             } else {\n-                max = mid-1;\n+                /// BinaryOpMutation(`-` |==> `/`) of: `max = mid-1;`\n+                max = mid/1;\n             }\n         }\n         return checkpoints[_min].value;\n",
+    "id": "24",
+    "name": "mutants/24/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "IfStatementMutation",
+    "diff": "--- original\n+++ mutant\n@@ -607,7 +607,8 @@\n      * @param _value The new number of tokens\n      */\n     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {\n-        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {\n+        /// IfStatementMutation(`(checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)` |==> `true`) of: `if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {`\n+        if (true) {\n             Checkpoint storage newCheckPoint = checkpoints.push();\n             newCheckPoint.fromBlock = uint128(block.number);\n             newCheckPoint.value = uint128(_value);\n",
+    "id": "25",
+    "name": "mutants/25/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -607,7 +607,8 @@\n      * @param _value The new number of tokens\n      */\n     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {\n-        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {\n+        /// BinaryOpMutation(`-` |==> `%`) of: `if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {`\n+        if ((checkpoints.length == 0) || (checkpoints[checkpoints.length%1].fromBlock < block.number)) {\n             Checkpoint storage newCheckPoint = checkpoints.push();\n             newCheckPoint.fromBlock = uint128(block.number);\n             newCheckPoint.value = uint128(_value);\n",
+    "id": "26",
+    "name": "mutants/26/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "BinaryOpMutation",
+    "diff": "--- original\n+++ mutant\n@@ -612,7 +612,8 @@\n             newCheckPoint.fromBlock = uint128(block.number);\n             newCheckPoint.value = uint128(_value);\n         } else {\n-            Checkpoint storage oldCheckPoint = checkpoints[checkpoints.length-1];\n+            /// BinaryOpMutation(`-` |==> `%`) of: `Checkpoint storage oldCheckPoint = checkpoints[checkpoints.length-1];`\n+            Checkpoint storage oldCheckPoint = checkpoints[checkpoints.length%1];\n             oldCheckPoint.value = uint128(_value);\n         }\n     }\n",
+    "id": "27",
+    "name": "mutants/27/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "DeleteExpressionMutation",
+    "diff": "--- original\n+++ mutant\n@@ -609,7 +609,8 @@\n     function updateValueAtNow(Checkpoint[] storage checkpoints, uint _value) internal {\n         if ((checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number)) {\n             Checkpoint storage newCheckPoint = checkpoints.push();\n-            newCheckPoint.fromBlock = uint128(block.number);\n+            /// DeleteExpressionMutation(`newCheckPoint.fromBlock = uint128(block.number)` |==> `assert(true)`) of: `newCheckPoint.fromBlock = uint128(block.number);`\n+            assert(true);\n             newCheckPoint.value = uint128(_value);\n         } else {\n             Checkpoint storage oldCheckPoint = checkpoints[checkpoints.length-1];\n",
+    "id": "28",
+    "name": "mutants/28/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "SwapArgumentsOperatorMutation",
+    "diff": "--- original\n+++ mutant\n@@ -637,7 +637,8 @@\n      * @dev Helper function to return a min betwen the two uints\n      */\n     function min(uint a, uint b) internal pure returns (uint) {\n-        return a < b ? a : b;\n+        /// SwapArgumentsOperatorMutation(`a < b` |==> `b < a`) of: `return a < b ? a : b;`\n+        return b < a ? a : b;\n     }\n \n     /**\n",
+    "id": "29",
+    "name": "mutants/29/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  },
+  {
+    "description": "RequireMutation",
+    "diff": "--- original\n+++ mutant\n@@ -647,7 +647,8 @@\n      */\n     receive() payable external {\n         require(isContract(controller), \"Deposit unallowed\");\n-        require(TokenController(controller).proxyPayment{value: msg.value}(msg.sender), \"Deposit denied\");\n+        /// RequireMutation(`TokenController(controller).proxyPayment{value: msg.value}(msg.sender)` |==> `true`) of: `require(TokenController(controller).proxyPayment{value: msg.value}(msg.sender), \"Deposit denied\");`\n+        require(true, \"Deposit denied\");\n     }\n \n //////////\n",
+    "id": "30",
+    "name": "mutants/30/contracts/token/MiniMeToken.sol",
+    "original": "contracts/token/MiniMeToken.sol",
+    "sourceroot": "/Users/dlx/Documents/GitHub/certora-fork-status-snt"
+  }
+]

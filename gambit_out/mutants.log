@@ -1,0 +1,30 @@
+1,AssignmentMutation,contracts/token/MiniMeToken.sol,159:31,_parentSnapShotBlock,0
+2,AssignmentMutation,contracts/token/MiniMeToken.sol,208:43,_amount,0
+3,SwapArgumentsOperatorMutation,contracts/token/MiniMeToken.sol,234:17,parentSnapShotBlock < block.number,block.number < parentSnapShotBlock
+4,SwapArgumentsOperatorMutation,contracts/token/MiniMeToken.sol,242:13,previousBalanceFrom < _amount,_amount < previousBalanceFrom
+5,BinaryOpMutation,contracts/token/MiniMeToken.sol,253:62, - ,*
+6,BinaryOpMutation,contracts/token/MiniMeToken.sol,259:58, + ,/
+7,AssignmentMutation,contracts/token/MiniMeToken.sol,288:36,_amount,0
+8,BinaryOpMutation,contracts/token/MiniMeToken.sol,300:31, + ,%
+9,RequireMutation,contracts/token/MiniMeToken.sol,302:17,previousBalanceTo + _amount >= previousBalanceTo,false
+10,DeleteExpressionMutation,contracts/token/MiniMeToken.sol,304:9,"updateValueAtNow(balances[_owner], previousBalanceTo + _amount)",assert(true)
+11,BinaryOpMutation,contracts/token/MiniMeToken.sol,304:61, + ,-
+12,BinaryOpMutation,contracts/token/MiniMeToken.sol,304:61, + ,*
+13,RequireMutation,contracts/token/MiniMeToken.sol,315:17,curTotalSupply >= _amount,true
+14,RequireMutation,contracts/token/MiniMeToken.sol,315:17,curTotalSupply >= _amount,false
+15,DeleteExpressionMutation,contracts/token/MiniMeToken.sol,377:9,"require(doApprove(msg.sender, _spender, _amount), ""Approve failed"")",assert(true)
+16,IfStatementMutation,contracts/token/MiniMeToken.sol,423:17,address(parentToken) != address(0),true
+17,SwapArgumentsOperatorMutation,contracts/token/MiniMeToken.sol,448:50,totalSupplyHistory[0].fromBlock > _blockNumber,_blockNumber > totalSupplyHistory[0].fromBlock
+18,AssignmentMutation,contracts/token/MiniMeToken.sol,489:29,block.number,0
+19,DeleteExpressionMutation,contracts/token/MiniMeToken.sol,500:9,cloneToken.changeController(msg.sender),assert(true)
+20,IfStatementMutation,contracts/token/MiniMeToken.sol,582:13,_block >= checkpoints[checkpoints.length-1].fromBlock,false
+21,BinaryOpMutation,contracts/token/MiniMeToken.sol,583:50,-,%
+22,BinaryOpMutation,contracts/token/MiniMeToken.sol,593:28, + ,-
+23,BinaryOpMutation,contracts/token/MiniMeToken.sol,593:28, + ,**
+24,BinaryOpMutation,contracts/token/MiniMeToken.sol,597:26,-,/
+25,IfStatementMutation,contracts/token/MiniMeToken.sol,610:13,(checkpoints.length == 0) || (checkpoints[checkpoints.length -1].fromBlock < block.number),true
+26,BinaryOpMutation,contracts/token/MiniMeToken.sol,610:73, -,%
+27,BinaryOpMutation,contracts/token/MiniMeToken.sol,615:78,-,%
+28,DeleteExpressionMutation,contracts/token/MiniMeToken.sol,612:13,newCheckPoint.fromBlock = uint128(block.number),assert(true)
+29,SwapArgumentsOperatorMutation,contracts/token/MiniMeToken.sol,640:16,a < b,b < a
+30,RequireMutation,contracts/token/MiniMeToken.sol,650:17,TokenController(controller).proxyPayment{value: msg.value}(msg.sender),true
