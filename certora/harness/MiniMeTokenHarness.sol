@@ -14,8 +14,8 @@ contract MiniMeTokenHarness is MiniMeToken {
         bool _transfersEnabled
     ) public MiniMeToken(_tokenFactory, _parentToken, _parentSnapShotBlock, _tokenName, _decimalUnits, _tokenSymbol, _transfersEnabled) {}
 
-    // function getBalancesLength() public view returns (uint256) {
-    //     return balances.length;
+    // function getBalancesLengthByAddress(address user) public view returns (uint256) {
+    //     return balances[user].length;
     // }
 
     function getCheckpointsLengthByAddress(address user) public view returns (uint256) {

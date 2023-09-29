@@ -12,10 +12,10 @@ methods {
     function allowance(address _owner, address _spender) external returns (uint256) envfree;
     function approveAndCall(address _spender, uint256 _amount, bytes memory _extraData) external returns (bool);
     function totalSupply() external returns (uint);
-    function balanceOfAt(address _owner, uint _blockNumber) external returns (uint) envfree;
-    function totalSupplyAt(uint _blockNumber) external returns (uint) envfree;
-    // function _.balanceOfAt(address _owner, uint _blockNumber) external => DISPATCHER(true);
-    // function _.totalSupplyAt(uint _blockNumber) external => DISPATCHER(true);
+    // function balanceOfAt(address _owner, uint _blockNumber) external returns (uint) envfree;
+    // function totalSupplyAt(uint _blockNumber) external returns (uint) envfree;
+    function _.balanceOfAt(address _owner, uint _blockNumber) external => DISPATCHER(true);
+    function _.totalSupplyAt(uint _blockNumber) external => DISPATCHER(true);
     function createCloneToken(string memory _cloneTokenName, uint8 _cloneDecimalUnits, string memory _cloneTokenSymbol, uint _snapshotBlock, bool _transfersEnabled) external returns(address);
     function generateTokens(address _owner, uint _amount) external returns (bool); // onlyController
     function destroyTokens(address _owner, uint _amount) external returns (bool); // onlyController
@@ -41,9 +41,6 @@ methods {
     
     function _.onTransfer(address _from, address _to, uint _amount) external => NONDET;
     function _.onApprove(address _from, address _spender, uint _amount) external => NONDET;
-    function _.receiveApproval(address from, uint256 _amount, address _token, bytes _data) external => NONDET;
-    function _.proxyPayment(address) external => NONDET;
-    function _.createCloneToken(address, uint, bytes, uint8, bytes, bool) external => NONDET;
 
 }
 
@@ -68,12 +65,10 @@ hook Sload uint128 _value totalSupplyHistory[INDEX uint256 i].value STORAGE {
 
 hook Sstore totalSupplyHistory[INDEX uint256 i].value uint128 _value (uint128 old_value) STORAGE {
     totalSupplyvalues[i] = _value;
-    // require totalSupplyHistory.length < 1000;
 }
 
 hook Sload uint128 _fromBlock totalSupplyHistory[INDEX uint256 i].fromBlock STORAGE {
     require totalSupplyFromBlocks[i] == _fromBlock;
-    // require totalSupplyHistory.length < 1000;
 }
 
 hook Sstore totalSupplyHistory[INDEX uint256 i].fromBlock uint128 _fromBlock (uint128 old_fromBlock) STORAGE {
@@ -82,32 +77,23 @@ hook Sstore totalSupplyHistory[INDEX uint256 i].fromBlock uint128 _fromBlock (ui
 
 hook Sload uint128 _value balances[KEY address user][INDEX uint256 i].value STORAGE {
     require values[user][i] == _value;
-    // require balances[user].length < 100;
-    // require getCheckpointsLengthByAddress(user) < 1000;
-    require i < 1000;
 }
 
 hook Sstore balances[KEY address user][INDEX uint256 i].value uint128 _value (uint128 old_value) STORAGE {
     values[user][i] = _value;
-    // require getCheckpointsLengthByAddress(user) < 1000;
-    require i < 1000;
 }
 
 hook Sload uint128 _fromBlock balances[KEY address user][INDEX uint256 i].fromBlock STORAGE {
     require fromBlocks[user][i] == _fromBlock;
-    // require getCheckpointsLengthByAddress(user) < 1000;
-    require i < 1000;
 }
 
 hook Sstore balances[KEY address user][INDEX uint256 i].fromBlock uint128 _fromBlock (uint128 old_fromBlock) STORAGE {
     fromBlocks[user][i] = _fromBlock;
-    require i < 1000;
 }
 
 // each checkpoint.fromBlock must be less than the current blocknumber (no checkpoints from the future).
 invariant checkPointBlockNumberValidity(env e1)
-    (to_mathint(e1.block.number) >= (getLatestBlockNumberByAddress(e1.msg.sender) - 1)) &&
-    (forall uint256 i. to_mathint(fromBlocks[e1.msg.sender][i]) <= to_mathint(e1.block.number))
+    to_mathint(e1.block.number) >= (getLatestBlockNumberByAddress(e1.msg.sender) - 1)
     { 
         preserved with (env e) { 
             require e1.block.number < max_uint128 && e1.block.number > 0 && e.block.number == e1.block.number; 
@@ -128,6 +114,7 @@ invariant blockNumberMonotonicInc(env e1)
     getFromBlockByAddressAndIndex(e1.msg.sender, e1.block.number) < getFromBlockByAddressAndIndex(e1.msg.sender, assert_uint256(e1.block.number + 1))
     { 
         preserved with (env e) { 
+            require parentToken(e) == 0; 
             requireInvariant checkPointBlockNumberValidity(e); 
         } 
     }
@@ -141,8 +128,7 @@ invariant balanceOfLessOrEqToTotalSpply(env e, address owner, uint blocknumber)
     balanceOfAt(e, owner, blocknumber) <= totalSupplyAt(e, blocknumber)
     { 
         preserved with (env e1) { 
-            // requireInvariant blockNumberMonotonicInc(e1);
-            // require parentToken(e1) == 0; //TODO: remove or handle
+            require parentToken(e1) == 0; //TODO: remove or handle
         } 
     }
 
@@ -161,7 +147,7 @@ function doesntChangeBalance(method f) returns bool {
 rule historyMutability(method f) {
     env e1;
     env e;
-    // require parentToken(e) == 0;
+    require parentToken(e) == 0;
     calldataarg args;
 
     uint256 balanceOfBefore = balanceOfAt(e, e.msg.sender, e.block.number);
@@ -184,13 +170,13 @@ rule noFeeOnTransferFrom(address alice, address bob, uint256 amount) {
     require allowance(alice, e.msg.sender) >= amount;
     // require parentToken(e) == 0;
     // requireInvariant checkPointBlockNumberValidity(e);
-    mathint balanceBefore = currentContract.balanceOf(e, bob);
-    mathint balanceAliceBefore = currentContract.balanceOf(e, alice);
+    mathint balanceBefore = balanceOf(e, bob);
+    mathint balanceAliceBefore = balanceOf(e, alice);
 
     bool success = transferFrom(e, alice, bob, amount);
 
-    mathint balanceAfter = currentContract.balanceOf(e, bob);
-    mathint balanceAliceAfter = currentContract.balanceOf(e, alice);
+    mathint balanceAfter = balanceOf(e, bob);
+    mathint balanceAliceAfter = balanceOf(e, alice);
     assert success => balanceAfter == balanceBefore + amount;
     assert success => balanceAliceAfter == balanceAliceBefore - amount;
     assert !success => balanceAfter == balanceBefore;
@@ -206,17 +192,17 @@ rule noFeeOnTransferFrom(address alice, address bob, uint256 amount) {
 rule noFeeOnTransfer(address bob, uint256 amount) {
     env e;
     require bob != e.msg.sender;
-    // require parentToken(e) == 0;
+    require parentToken(e) == 0;
     // requireInvariant blockNumberMonotonicInc(e);
     // requireInvariant checkPointBlockNumberValidity(e);
     require e.block.number < max_uint128;
-    mathint balanceSenderBefore = currentContract.balanceOf(e, e.msg.sender);
-    mathint balanceBefore = currentContract.balanceOf(e, bob);
+    mathint balanceSenderBefore = balanceOf(e, e.msg.sender);
+    mathint balanceBefore = balanceOf(e, bob);
 
     bool success = transfer(e, bob, amount);
 
-    mathint balanceAfter = currentContract.balanceOf(e, bob);
-    mathint balanceSenderAfter = currentContract.balanceOf(e, e.msg.sender);
+    mathint balanceAfter = balanceOf(e, bob);
+    mathint balanceSenderAfter = balanceOf(e, e.msg.sender);
     assert success => balanceAfter == balanceBefore + amount;
     assert success => balanceSenderAfter == balanceSenderBefore - amount;
     assert !success => balanceAfter == balanceBefore;
@@ -237,22 +223,20 @@ rule transferCorrect(address to, uint256 amount) {
     env e;
     require e.msg.value == 0 && e.msg.sender != 0;
 
-    require e.msg.sender < 100;
-
-    // require parentToken(e) == 0;
+    require parentToken(e) == 0;
     requireInvariant checkPointBlockNumberValidity(e);
-    uint256 fromBalanceBefore = currentContract.balanceOf(e, e.msg.sender);
-    uint256 toBalanceBefore = currentContract.balanceOf(e, to);
+    uint256 fromBalanceBefore = balanceOf(e, e.msg.sender);
+    uint256 toBalanceBefore = balanceOf(e, to);
     require fromBalanceBefore + toBalanceBefore <= max_uint256;
 
     bool success = transfer(e, to, amount);
     // bool reverted = lastReverted;
     if (success) {
         if (e.msg.sender == to) {
-            assert currentContract.balanceOf(e, e.msg.sender) == fromBalanceBefore;
+            assert balanceOf(e, e.msg.sender) == fromBalanceBefore;
         } else {
-            assert currentContract.balanceOf(e, e.msg.sender) == assert_uint256(fromBalanceBefore - amount);
-            assert currentContract.balanceOf(e, to) == assert_uint256(toBalanceBefore + amount);
+            assert balanceOf(e, e.msg.sender) == assert_uint256(fromBalanceBefore - amount);
+            assert balanceOf(e, to) == assert_uint256(toBalanceBefore + amount);
         }
     } else {
         assert amount > fromBalanceBefore || to == 0;
@@ -272,18 +256,18 @@ rule transferCorrect(address to, uint256 amount) {
 rule transferFromCorrect(address from, address to, uint256 amount) {
     env e;
     require e.msg.value == 0;
-    // require parentToken(e) == 0;
+    require parentToken(e) == 0;
     // requireInvariant checkPointBlockNumberValidity(e);
-    uint256 fromBalanceBefore = currentContract.balanceOf(e, from);
-    uint256 toBalanceBefore = currentContract.balanceOf(e, to);
+    uint256 fromBalanceBefore = balanceOf(e, from);
+    uint256 toBalanceBefore = balanceOf(e, to);
     uint256 allowanceBefore = allowance(from, e.msg.sender);
     require fromBalanceBefore + toBalanceBefore <= max_uint256;
 
     bool success = transferFrom(e, from, to, amount);
 
     assert (success && from != to) =>
-        currentContract.balanceOf(e, from) == assert_uint256(fromBalanceBefore - amount) &&
-        currentContract.balanceOf(e, to) == assert_uint256(toBalanceBefore + amount) &&
+        balanceOf(e, from) == assert_uint256(fromBalanceBefore - amount) &&
+        balanceOf(e, to) == assert_uint256(toBalanceBefore + amount) &&
         allowance(from, e.msg.sender) == assert_uint256(allowanceBefore - amount);
 }
 
@@ -297,11 +281,11 @@ rule transferFromCorrect(address from, address to, uint256 amount) {
 rule transferFromReverts(address from, address to, uint256 amount) {
     env e;
     uint256 allowanceBefore = allowance(from, e.msg.sender);
-    uint256 fromBalanceBefore = currentContract.balanceOf(e, from);
+    uint256 fromBalanceBefore = balanceOf(e, from);
     requireInvariant allFromBlockAreGreaterThanParentSnapShotBlock(e.msg.sender, e.block.number);
     require from != 0 && e.msg.sender != 0;
     require e.msg.value == 0;
-    require fromBalanceBefore + currentContract.balanceOf(e, to) <= max_uint256;
+    require fromBalanceBefore + balanceOf(e, to) <= max_uint256;
     bool transfersEnabled = transfersEnabled();
 
     bool success = transferFrom@withrevert(e, from, to, amount);
@@ -316,16 +300,13 @@ rule transferFromReverts(address from, address to, uint256 amount) {
     @Notes:
 */
 invariant ZeroAddressNoBalance(env e)
-    currentContract.balanceOf(e, 0) == 0;
-    // { 
-    //     preserved with (env e1) { 
-    //         // require getCheckpointsLengthByAddress(0) < 1000;
-    //         // require e1.msg.sender != 0;
-    //         // require e1.msg.sender < 1000;
-    //         // require e1.block.number < 1000;
-    //         // require e.msg.sender < 1000;
-    //     } 
-    // }
+    balanceOf(e, 0) == 0
+    { 
+        preserved { 
+            require parentToken(e) == 0; 
+            // requireInvariant checkPointBlockNumberValidity(e); 
+        } 
+    }
 
 
 /*
@@ -341,39 +322,31 @@ rule NoChangeTotalSupply(method f) {
     env e;
     calldataarg args;
     require doesntChangeBalance(f);
-    uint256 totalSupplyBefore = currentContract.totalSupply(e);
+    uint256 totalSupplyBefore = totalSupply(e);
     f(e, args);
-    assert currentContract.totalSupply(e) == totalSupplyBefore;
+    assert totalSupply(e) == totalSupplyBefore;
 }
 
-rule integrityOfGenerateTokens(address owner, uint amount) {
-    env e;
-    mathint totalSupplyBefore = currentContract.totalSupply(e);
-    mathint ownerBalanceBefore = currentContract.balanceOf(e, owner);
+// /*
+//  The two rules cover the same ground as NoChangeTotalSupply.
+ 
+//  The split into two rules is in order to make the burn/mint features of a tested token even more obvious
+// */
+// rule noBurningTokens(method f) {
+//     uint256 totalSupplyBefore = totalSupply();
+//     env e;
+//     calldataarg args;
+//     f(e, args);
+//     assert totalSupply() >= totalSupplyBefore;
+// }
 
-    bool success = generateTokens(e, owner, amount);
-
-    mathint totalSupplyAfter = currentContract.totalSupply(e);
-    mathint ownerBalanceAfter = currentContract.balanceOf(e, owner);
-
-    assert success => (totalSupplyAfter == totalSupplyBefore + amount && ownerBalanceAfter == ownerBalanceBefore + amount);
-    assert !success => (totalSupplyAfter == totalSupplyBefore && ownerBalanceAfter == ownerBalanceBefore);
-}
-
-rule integrityOfDestroyTokens(address owner, uint amount) {
-    env e;
-    mathint totalSupplyBefore = currentContract.totalSupply(e);
-    mathint ownerBalanceBefore = currentContract.balanceOf(e, owner);
-
-    bool success = destroyTokens(e, owner, amount);
-
-    mathint totalSupplyAfter = currentContract.totalSupply(e);
-    mathint ownerBalanceAfter = currentContract.balanceOf(e, owner);
-
-    assert success => (totalSupplyAfter == totalSupplyBefore - amount && ownerBalanceAfter == ownerBalanceBefore - amount);
-    assert !success => (totalSupplyAfter == totalSupplyBefore && ownerBalanceAfter == ownerBalanceBefore);
-}
-
+// rule noMintingTokens(method f) {
+//     uint256 totalSupplyBefore = totalSupply();
+//     env e;
+//     calldataarg args;
+//     f(e, args);
+//     assert totalSupply() <= totalSupplyBefore;
+// }
 
 // /*
 //     @Description:

@@ -13,6 +13,6 @@ contract ParentMiniMeToken is MiniMeToken {
         uint8 _decimalUnits,
         string memory _tokenSymbol,
         bool _transfersEnabled
-    ) public MiniMeToken(_tokenFactory, _parentToken, _parentSnapShotBlock, _tokenName, _decimalUnits, _tokenSymbol, _transfersEnabled) {}
+    ) public MiniMeToken(_tokenFactory, payable(address(0)), 0, _tokenName, _decimalUnits, _tokenSymbol, _transfersEnabled) {}
 
 }
