@@ -64,20 +64,24 @@ ghost mapping(uint256 => uint128) totalSupplyvalues;
 
 hook Sload uint128 _value totalSupplyHistory[INDEX uint256 i].value STORAGE {
     require totalSupplyvalues[i] == _value;
+    require i < 1000;
 }
 
 hook Sstore totalSupplyHistory[INDEX uint256 i].value uint128 _value (uint128 old_value) STORAGE {
     totalSupplyvalues[i] = _value;
     // require totalSupplyHistory.length < 1000;
+    require i < 1000;
 }
 
 hook Sload uint128 _fromBlock totalSupplyHistory[INDEX uint256 i].fromBlock STORAGE {
     require totalSupplyFromBlocks[i] == _fromBlock;
     // require totalSupplyHistory.length < 1000;
+    require i < 1000;
 }
 
 hook Sstore totalSupplyHistory[INDEX uint256 i].fromBlock uint128 _fromBlock (uint128 old_fromBlock) STORAGE {
     totalSupplyFromBlocks[i] = _fromBlock;
+    require i < 1000;
 }
 
 hook Sload uint128 _value balances[KEY address user][INDEX uint256 i].value STORAGE {
